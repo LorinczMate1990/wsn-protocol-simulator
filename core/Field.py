@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+   from core.NodeSkeleton import *
 
 import sys
 
-sys.path.insert(0, 'utility')
 import bisect
 import pygame
 from core.Message import *
@@ -12,13 +15,13 @@ from core.Reporting import *
 import utility.vector as vector
 
 class MessageEvent:
-   def __init__(self, fireTime, message, channel, recipients, source):
+   def __init__(self, fireTime : int, message, channel : int, recipients : list[ReachableDescriptor], source : NodeSkeleton):
       self.source = source     # the source of the message 
       self.fireTime = fireTime # The round's number when this object will be destroyed
       self.message = message   # the sended message object
       self.recipients = recipients
       self.channel = channel   # The used channel
-      self.success={}
+      self.success : set[int, int] ={}
       for descriptor in recipients:
          descriptor.to._beginChannelUse(channel)
          self.success[descriptor.to.ID] = descriptor.success()

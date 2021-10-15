@@ -1,4 +1,8 @@
 #!/bin/env python
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+   from core.NodeSkeleton import *
 
 from random import random  
 
@@ -21,11 +25,11 @@ class ChannelStateDescriptor(object):
       return self.__jammed
 
 class ReachableDescriptor(object):
-   def __init__(self, to, propability):
+   def __init__(self, to : NodeSkeleton, propability : float):
       self.to = to
       self.propability = propability
       
-   def success(self):
+   def success(self) -> bool:
       return random()<self.propability
 
 class Battery(object):
