@@ -7,15 +7,14 @@ from core.NodeHelpers import *
 from pygame import *
 from utility.ImageLoader import *
 
-nodeCounter = 0
-
 class NodeSkeleton(object):
+   nodeCounter = 0
    def __init__(self, x, y, asyncPropability):
       global nodeCounter
       self.x=x # Position on the world. The painting, visualisation and the default connection tester are based on x and y
       self.y=y
-      self.ID=nodeCounter # The node's unique name. It's uniquness is vital for the simulation, that's why it's generated automaticly.
-      nodeCounter+=1
+      self.ID=NodeSkeleton.nodeCounter # The node's unique name. It's uniquness is vital for the simulation, that's why it's generated automaticly.
+      NodeSkeleton.nodeCounter+=1
       self.__needRecheckConnections = True
       self.reachables = [] # The neighbours. Sometimes, it's practical during the simulation to know the neighbours, that's why it's not marked with _ or __
       self.asyncPropability = asyncPropability # If this is 1, than this node's periodicEvent will call in every periodic event cycle. If this is 0, then never
