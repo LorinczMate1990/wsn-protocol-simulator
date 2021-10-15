@@ -6,9 +6,9 @@ import sys
 sys.path.insert(0, 'utility')
 import bisect
 import pygame
-from Message import *
-from NodeSkeleton import *
-from Reporting import *
+from core.Message import *
+from core.NodeHelpers import *
+from core.Reporting import *
 import utility.vector as vector
 
 class MessageEvent:
@@ -116,7 +116,7 @@ class Field:
       # If you use non-graphic simulation, you only have to call this function from your main script
       # In every discrete time unit, I have to...
       # ...deliver the messages
-      print "self.localTime: ", self.localTime
+      print("self.localTime: ", self.localTime)
       self.deliverMessages()
       
       # ...call the nodes' periodic event

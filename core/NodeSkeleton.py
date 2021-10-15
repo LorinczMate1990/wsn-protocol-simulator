@@ -2,49 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from random import random  
-from Field import *
+from core.Field import *
+from core.NodeHelpers import *
 from pygame import *
-from ImageLoader import *
+from utility.ImageLoader import *
 
 nodeCounter = 0
 
-class ChannelStateDescriptor:
-   def __init__(self):
-      self.counter = 1
-      self.__jammed = False
-      
-   def newMessage(self):
-      self.counter +=1
-      self.__jammed = True
-      
-   def endMessage(self):
-      self.counter -= 1
-      
-   def destroyable(self):
-      return self.counter == 0
-   
-   def jammed(self):
-      return self.__jammed
-
-class ReachableDescriptor:
-   def __init__(self, to, propability):
-      self.to = to
-      self.propability = propability
-      
-   def success(self):
-      return random()<self.propability
-
-class Battery:
-   def __init__(self):
-      self.powerLevel = float('inf')
-   
-   def drain(self, energy):
-      self.powerLevel -= energy
-   
-   def hasPower(self):
-      return self.powerLevel > 0
-
-class NodeSkeleton:
+class NodeSkeleton(object):
    def __init__(self, x, y, asyncPropability):
       global nodeCounter
       self.x=x # Position on the world. The painting, visualisation and the default connection tester are based on x and y
@@ -89,7 +54,7 @@ class NodeSkeleton:
    def periodicEvent(self): pass # Runs periodicly. (Can be set assincronity by setting the self.asyncPropability)
    def messageEvent(self, data): pass # Runs if the node receives a message
    def _beginChannelUse(self, channel): # If a message begins to use a channel, it will call this function
-      if self.__channelUsage.has_key(channel):
+      if channel in self.__channelUsage:
          self.__channelUsage[channel].newMessage()
       else:
          self.__channelUsage[channel] = ChannelStateDescriptor()
@@ -104,11 +69,6 @@ class NodeSkeleton:
       if self._RXMode: return False
       self.field.sendMessage(self.reachables, data, duration, channel, self)
       self._beginChannelUse(channel)
-
-class NodeIconDescriptor:
-   def __init__(self, width, icon):
-      self.width=width
-      self.icon=icon
      
 class GraphNodeSkeleton(NodeSkeleton):
    def __init__(self, x, y, asyncPropability):

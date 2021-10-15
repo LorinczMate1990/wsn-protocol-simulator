@@ -3,7 +3,7 @@
 
 import sys
 sys.path.insert(0, 'core')
-from NodeSkeleton import *
+from core.NodeSkeleton import *
 from random import *
 
 class BasicNode(GraphNodeSkeleton):

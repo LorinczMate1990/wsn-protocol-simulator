@@ -3,17 +3,17 @@
 
 import pygame
 
-class ImageLoader:
+class ImageLoader(object):
    _instance = None
-   def __new__(cls, *args, **kwargs):
-      if not cls._instance:
-         cls._instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
-      return cls._instance
+   def __new__(class_, *args, **kwargs):
+      if not isinstance(class_._instance, class_):
+         class_._instance = object.__new__(class_, *args, **kwargs)
+      return class_._instance
 
    def __init__(self):
       self.images = {}
 
    def getImage(self, name):
-      if not self.images.has_key(name):
+      if name not in self.images:
          self.images[name]=pygame.image.load(name)
       return self.images[name]

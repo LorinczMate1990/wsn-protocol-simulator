@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 
 def TextMessage(text):
-   print text
+   print(text)
