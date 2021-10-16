@@ -11,7 +11,7 @@ from utility.ImageLoader import *
 
 class NodeSkeleton(object):
    nodeCounter = 0
-   def __init__(self, x : int, y : int, asyncPropability : Callable[[NodeSkeleton, NodeSkeleton], float]):
+   def __init__(self, x : int, y : int, asyncPropability : float):
       global nodeCounter
       self.x = x # Position on the world. The painting, visualisation and the default connection tester are based on x and y
       self.y = y
@@ -83,11 +83,11 @@ class NodeSkeleton(object):
       self._beginChannelUse(channel)
      
 class GraphNodeSkeleton(NodeSkeleton):
-   def __init__(self, x : int, y : int, asyncPropability : Callable[[NodeSkeleton, NodeSkeleton], float]):
+   def __init__(self, x : int, y : int, asyncPropability : float):
       NodeSkeleton.__init__(self, x, y, asyncPropability)
       self.image = NodeIconDescriptor(30, (255,0,0))
       
-   def setImage(self, image : Union[tuple, str]):
+   def setImage(self, image : tuple | str):
       self.image = image
 
    def _draw(self, screen):

@@ -4,6 +4,7 @@
 import sys
 sys.path.insert(0, 'core')
 from core.NodeSkeleton import *
+from core.NodeHelpers import *
 from random import *
 
 class BasicNode(GraphNodeSkeleton):
@@ -19,7 +20,7 @@ class BasicNode(GraphNodeSkeleton):
   
    def periodicEvent(self): # Runs periodicly. (Can be set asyncronity in the config-file)
       if self.randomDelay>=0: self.randomDelay-=1
-      self.image = NodeIconDescriptor(20,"media/1.jpg")
+      self.image = NodeIconDescriptor(20, "media/1.jpg")
       if self.randomDelay == 0: 
          self.sendMessage((3,2,1), 10)
          self.image = NodeIconDescriptor(20,(255,0,0))

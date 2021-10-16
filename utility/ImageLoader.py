@@ -11,9 +11,9 @@ class ImageLoader(object):
       return class_._instance
 
    def __init__(self):
-      self.images = {}
+      self.images : dict[str, pygame.surface] = {}
 
-   def getImage(self, name):
+   def getImage(self, name : str):
       if name not in self.images:
          self.images[name]=pygame.image.load(name)
       return self.images[name]

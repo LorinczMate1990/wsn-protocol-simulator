@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+from typing import *
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-   from core.NodeSkeleton import *
+   from core.NodeSkeleton import NodeSkeleton
 
 import sys
 
@@ -15,19 +16,19 @@ from core.Reporting import *
 import utility.vector as vector
 
 class MessageEvent:
-   def __init__(self, fireTime : int, message, channel : int, recipients : list[ReachableDescriptor], source : NodeSkeleton):
+   def __init__(self, fireTime : int, message : Message, channel : int, recipients : list[ReachableDescriptor], source : NodeSkeleton):
       self.source = source     # the source of the message 
       self.fireTime = fireTime # The round's number when this object will be destroyed
       self.message = message   # the sended message object
       self.recipients = recipients
       self.channel = channel   # The used channel
-      self.success : set[int, int] ={}
+      self.success : set[int, bool] ={}
       for descriptor in recipients:
          descriptor.to._beginChannelUse(channel)
          self.success[descriptor.to.ID] = descriptor.success()
       source._RXMode=True
       
-   def fire(self):
+   def fire(self) -> None:
       for reachableDesc in self.recipients:
          reachableNode = reachableDesc.to
          if reachableNode._endChannelUse(self.channel) and self.success[reachableNode.ID]:
@@ -36,23 +37,23 @@ class MessageEvent:
       self.source._endChannelUse(self.channel)
    
    # I have to sort them reverse
-   def __lt__(self,o): return self.fireTime > o.fireTime 
-   def __le__(self,o): return self.fireTime >= o.fireTime
-   def __eq__(self,o): return self.fireTime == o.fireTime
-   def __ne__(self,o): return self.fireTime != o.fireTime
-   def __gt__(self,o): return self.fireTime < o.fireTime
-   def __ge__(self,o): return self.fireTime <= o.fireTime
+   def __lt__(self, o : MessageEvent) -> bool: return self.fireTime > o.fireTime 
+   def __le__(self, o : MessageEvent) -> bool: return self.fireTime >= o.fireTime
+   def __eq__(self, o : MessageEvent) -> bool: return self.fireTime == o.fireTime
+   def __ne__(self, o : MessageEvent) -> bool: return self.fireTime != o.fireTime
+   def __gt__(self, o : MessageEvent) -> bool: return self.fireTime < o.fireTime
+   def __ge__(self, o : MessageEvent) -> bool: return self.fireTime <= o.fireTime
 
 class GraphMessageEvent(MessageEvent):
-   def __init__(self, fireTime, message, channel, recipients, source, ttl):
+   def __init__(self, fireTime : int, message, channel : int, recipients : list[ReachableDescriptor], source : NodeSkeleton, ttl : float):
       MessageEvent.__init__(self,fireTime, message, channel, recipients, source)
       self.originalTtl = ttl
       self.ttl = ttl
 
-   def decraseTtl(self, by):
+   def decraseTtl(self, by : float) -> None:
       self.ttl-=by
    
-   def _draw(self, screen):
+   def _draw(self, screen : pygame.Surface) -> None:
       ratio = 1.0*self.ttl/self.originalTtl
       for recDesc in self.recipients:
          rec = recDesc.to
@@ -60,17 +61,16 @@ class GraphMessageEvent(MessageEvent):
          progressVector = vector.coordRound(progressVector)
          pygame.draw.line(screen, (255,255,255), (self.source.x,self.source.y), (rec.x, rec.y), 2)
          if self.success[rec.ID]:
-            pygame.draw.circle(screen, (255,255,0), progressVector, 4)   
-   
+            pygame.draw.circle(screen, (255,255,0), progressVector, 4)
 
 class Field:
-   def __init__(self, connectionCheckFunction):
+   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton], float]):
       self.connectionCheckFunction = connectionCheckFunction 
-      self.nodeList=[]
-      self.eventList=[]
-      self.localTime=0
+      self.nodeList : list[NodeSkeleton] = []
+      self.eventList : list[MessageEvent] = []
+      self.localTime : int = 0
    
-   def __addNewNodeToConnectionList(self, node):
+   def __addNewNodeToConnectionList(self, node : NodeSkeleton) -> None:
       for oldNode in self.nodeList:
          if node == oldNode: continue
          propabilityTo = self.connectionCheckFunction(oldNode, node)
@@ -80,7 +80,7 @@ class Field:
          if propabilityFrom > 0:
             node.reachables.append(ReachableDescriptor(oldNode, propabilityFrom))
 
-   def __validateConnectionLists(self):
+   def __validateConnectionLists(self) -> None:
       for node in self.nodeList:
          node.reachables = []
          
@@ -90,22 +90,22 @@ class Field:
             if self.connectionCheckFunction(nodeA, nodeB):
                nodeA.reachables.push_back(nodeB)
    
-   def addNode(self, node):
+   def addNode(self, node : NodeSkeleton) -> None:
       self.__addNewNodeToConnectionList(node)
       node._setFieldReference(self)
       self.nodeList.append(node)
    
-   def periodicEvent(self):
+   def periodicEvent(self) -> None:
       for node in self.nodeList:
          node._periodicEvent()
 
-   def deliverMessages(self):
+   def deliverMessages(self) -> None:
       while len(self.eventList)>0 and self.eventList[-1].fireTime <= self.localTime:
          msgEvent = self.eventList.pop()
          msgEvent.fire()
    
-   def sendMessage(self, reachable, msgData, duration, channel, source):
-      event = MessageEvent(self.localTime+duration, Message(msgData), channel, reachable, source)
+   def sendMessage(self, reachables : list[ReachableDescriptor], messageData, duration : int, channel : int, source : NodeSkeleton):
+      event = MessageEvent(self.localTime+duration, Message(messageData), channel, reachables, source)
       bisect.insort(self.eventList, event)
    
    def tick(self):
@@ -128,12 +128,12 @@ class Field:
       self.localTime += 1
          
 class GraphFieldHandler(Field):
-   def __init__(self, connectionCheckFunction, width, height):
+   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton]], width : int, height : int):
       Field.__init__(self, connectionCheckFunction)
       pygame.init()
       self.done = False
       self.paused = False
-      self.screen=screen = pygame.display.set_mode((width, height))
+      self.screen : pygame.Surface = pygame.display.set_mode((width, height))
    
    def __eventHandler(self, events):
       for event in events:
@@ -150,16 +150,18 @@ class GraphFieldHandler(Field):
       for event in self.eventList:
          event._draw(self.screen)
          
-   def __decraseMessageEventTtlBy(self, by):
+   def __decraseMessageEventTtlBy(self, by : float):
       # ...decrease the message event's TTL
       for msgEvent in self.eventList:
+         assert issubclass(type(msgEvent), GraphMessageEvent)
+         msgEvent : GraphMessageEvent = msgEvent
          msgEvent.decraseTtl(by)
 
-   def sendMessage(self, reachable, msgData, duration, channel, source):
-      event = GraphMessageEvent(self.localTime+duration, Message(msgData), channel, reachable, source, duration)
+   def sendMessage(self, reachables : list[ReachableDescriptor], msgData, duration : int, channel : int, source : NodeSkeleton):
+      event = GraphMessageEvent(self.localTime+duration, Message(msgData), channel, reachables, source, duration)
       bisect.insort(self.eventList, event)
          
-   def simulation(self, iterationNumber, frameRate, iterationRate):
+   def simulation(self, iterationNumber : int, frameRate : int, iterationRate : int):
       clock = pygame.time.Clock()
       tickCounter=0
       frameIterationRatio = 1.0*frameRate/iterationRate;

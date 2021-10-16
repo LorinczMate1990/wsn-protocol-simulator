@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-   from core.NodeSkeleton import *
+   from core.NodeSkeleton import NodeSkeleton
 
 from random import random  
 
@@ -34,15 +34,15 @@ class ReachableDescriptor(object):
 
 class Battery(object):
    def __init__(self):
-      self.powerLevel = float('inf')
+      self.powerLevel : float = float('inf')
    
-   def drain(self, energy):
+   def drain(self, energy : float):
       self.powerLevel -= energy
    
    def hasPower(self):
       return self.powerLevel > 0
 
 class NodeIconDescriptor(object):
-   def __init__(self, width, icon):
+   def __init__(self, width : int, icon : str):
       self.width=width
       self.icon=icon
