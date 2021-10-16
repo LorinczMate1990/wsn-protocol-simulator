@@ -8,8 +8,8 @@ from core.Field import *
 
 class CollectedData(object):
     def __init__(self):
-        self.data : dict[int, ] = {}
-
+        self.data : dict[int, Any] = {}
+    
     def addData(self, time : int, value):
         self.data[time] = value
 

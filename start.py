@@ -41,5 +41,6 @@ if __name__ == '__main__':
          node = BasicNode(i+60, j+60, 1)
          field.addNode(node)
    
-   field.simulation(600, 30, 1000)
+   field.simulation(600, 30, 100)
+   
    print(fieldDataCollector.nodeDataCollectors[0].sessionData['randomDelay'].data)
