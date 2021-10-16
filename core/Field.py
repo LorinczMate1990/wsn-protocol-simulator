@@ -69,6 +69,7 @@ class Field:
       self.nodeList : list[NodeSkeleton] = []
       self.eventList : list[MessageEvent] = []
       self.localTime : int = 0
+      self.firstTick = True
    
    def __addNewNodeToConnectionList(self, node : NodeSkeleton) -> None:
       for oldNode in self.nodeList:
@@ -109,11 +110,11 @@ class Field:
       bisect.insort(self.eventList, event)
    
    def tick(self):
-      for node in self.nodeList:
-         node.init()
+      if self.firstTick:
+         self.firstTick = False
+         for node in self.nodeList:
+            node.init()
       self.__laterTicks()
-      self.tick = self.__laterTicks # I have to call the init only on first tick, but later,
-                                    # I have to call only __laterTicks.
    
    def __laterTicks(self):
       # If you use non-graphic simulation, you only have to call this function from your main script
@@ -164,7 +165,7 @@ class GraphFieldHandler(Field):
    def simulation(self, iterationNumber : int, frameRate : int, iterationRate : int):
       clock = pygame.time.Clock()
       tickCounter=0
-      frameIterationRatio = 1.0*frameRate/iterationRate;
+      frameIterationRatio = 1.0*frameRate/iterationRate
       # This cycle will run frameRate times in every sec (because clock.tick(frameRate)),
       #   but I only want to run the tick() iterationRate times in every sec 
       # I have to run the cycle iterationNumber/iterationRate*frameRate

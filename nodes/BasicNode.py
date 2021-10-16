@@ -9,7 +9,7 @@ from random import *
 
 class BasicNode(GraphNodeSkeleton):
    def init(self):
-      self.counter = 0
+      self.messageCounter = 0
       self.randomDelay = 0
       if (self.ID==3):
          self.randomDelay=1
@@ -27,3 +27,4 @@ class BasicNode(GraphNodeSkeleton):
    
    def messageEvent(self, data): # Runs if the node receives a valid message
       self.randomDelay=randint(1, 20)
+      self.messageCounter += 1

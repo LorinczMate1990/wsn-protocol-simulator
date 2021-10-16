@@ -3,6 +3,7 @@
 
 from nodes.BasicNode import *
 from core.Field import *
+from core.DataCollector import FieldDataCollector
 
 maxRange = 100
 
@@ -28,6 +29,12 @@ def calculateNonlinearConnectionPropability(a,b):
 
 if __name__ == '__main__':
    field = GraphFieldHandler(calculateNonlinearConnectionPropability, 400, 400)
+   fieldDataCollector = FieldDataCollector(field,
+      {
+         "randomDelay": "randomDelay",
+         "Received messages": "messageCounter"
+      }
+   )
 
    for i in range(0, 60*6, 60):
       for j in range(0, 60*6, 60):
@@ -35,3 +42,4 @@ if __name__ == '__main__':
          field.addNode(node)
    
    field.simulation(600, 30, 10)
+   print(fieldDataCollector.nodeDataCollectors[0].sessionData)
