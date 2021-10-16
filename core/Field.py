@@ -27,7 +27,7 @@ class MessageEvent:
          descriptor.to._beginChannelUse(channel)
          self.success[descriptor.to.ID] = descriptor.success()
       source._RXMode=True
-      
+
    def fire(self) -> None:
       for reachableDesc in self.recipients:
          reachableNode = reachableDesc.to
@@ -67,6 +67,11 @@ class Field:
    def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton], float]):
       self.connectionCheckFunction = connectionCheckFunction 
       self.nodeList : list[NodeSkeleton] = []
+      self.eventList : list[MessageEvent] = []
+      self.localTime : int = 0
+      self.firstTick = True
+
+   def reset(self) -> None:
       self.eventList : list[MessageEvent] = []
       self.localTime : int = 0
       self.firstTick = True
