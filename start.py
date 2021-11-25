@@ -32,7 +32,8 @@ if __name__ == '__main__':
    fieldDataCollector = FieldDataCollector(field,
       {
          "randomDelay": "randomDelay",
-         "Received messages": "messageCounter"
+         "Received messages": "messageCounter",
+         "Power level": "battery.powerLevel"
       }
    )
 
