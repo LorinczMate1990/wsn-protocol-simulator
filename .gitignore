@@ -1,2 +1,5 @@
 *.pyc
 conda
+.mypy_cache
+dist
+*.egg-info

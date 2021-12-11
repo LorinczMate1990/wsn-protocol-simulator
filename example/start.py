@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from nodes.BasicNode import *
-from core.Field import *
-from core.DataCollector import FieldDataCollector
+from wsnSimulator.core.Field import *
+from wsnSimulator.core.DataCollector import FieldDataCollector
 
 maxRange = 100
 

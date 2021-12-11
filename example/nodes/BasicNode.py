@@ -3,8 +3,8 @@
 
 import sys
 sys.path.insert(0, 'core')
-from core.NodeSkeleton import *
-from core.NodeHelpers import *
+from wsnSimulator.core.NodeSkeleton import *
+from wsnSimulator.core.NodeHelpers import *
 from random import *
 
 class BasicNode(GraphNodeSkeleton):

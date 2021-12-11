@@ -3,8 +3,8 @@
 from __future__ import annotations
 from typing import *
 from types import MethodType
-from core.NodeSkeleton import *
-from core.Field import *
+from wsnSimulator.core.NodeSkeleton import *
+from wsnSimulator.core.Field import *
 
 class CollectedData(object):
     def __init__(self):

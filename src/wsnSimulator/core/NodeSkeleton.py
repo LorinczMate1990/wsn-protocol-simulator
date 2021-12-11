@@ -4,10 +4,10 @@ from __future__ import annotations
 from typing import *
 
 from random import random  
-from core.Field import *
-from core.NodeHelpers import *
+from wsnSimulator.core.Field import *
+from wsnSimulator.core.NodeHelpers import *
 from pygame import *
-from utility.ImageLoader import *
+from wsnSimulator.utility.ImageLoader import *
 
 class NodeSkeleton(object):
    nodeCounter = 0

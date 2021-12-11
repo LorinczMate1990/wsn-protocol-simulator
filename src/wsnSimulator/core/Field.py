@@ -4,16 +4,16 @@ from __future__ import annotations
 from typing import *
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-   from core.NodeSkeleton import NodeSkeleton
+   from wsnSimulator.core.NodeSkeleton import NodeSkeleton
 
 import sys
 
 import bisect
 import pygame
-from core.Message import *
-from core.NodeHelpers import *
-from core.Reporting import *
-import utility.vector as vector
+from wsnSimulator.core.Message import *
+from wsnSimulator.core.NodeHelpers import *
+from wsnSimulator.core.Reporting import *
+import wsnSimulator.utility.vector as vector
 
 class MessageEvent:
    def __init__(self, fireTime : int, message : Message, channel : int, recipients : list[ReachableDescriptor], source : NodeSkeleton):
