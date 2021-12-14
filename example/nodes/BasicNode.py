@@ -8,7 +8,7 @@ from wsnSimulator.core.NodeHelpers import *
 from random import *
 
 class BasicNode(GraphNodeSkeleton):
-   def init(self):
+   def firstTick(self):
       self.messageCounter = 0
       self.randomDelay = 0
       if (self.ID==3):

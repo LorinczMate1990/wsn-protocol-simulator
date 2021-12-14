@@ -11,7 +11,7 @@ from wsnSimulator.utility.ImageLoader import *
 
 class NodeSkeleton(object):
    nodeCounter = 0
-   def __init__(self, x : int, y : int, asyncPropability : float):
+   def __init__(self, x : int, y : int, *args, **kwargs):
       global nodeCounter
       self.x = x # Position on the world. The painting, visualisation and the default connection tester are based on x and y
       self.y = y
@@ -19,13 +19,14 @@ class NodeSkeleton(object):
       NodeSkeleton.nodeCounter += 1
       self.__needRecheckConnections = True
       self.reachables : list[NodeSkeleton] = [] # The neighbours. Sometimes, it's practical during the simulation to know the neighbours, that's why it's not marked with _ or __
-      self.asyncPropability = asyncPropability # If this is 1, than this node's periodicEvent will call in every periodic event cycle. If this is 0, then never
+      self.asyncPropability = 1 # If this is 1, than this node's periodicEvent will call in every periodic event cycle. If this is 0, then never
       self.__channelUsage : dict[int, ChannelStateDescriptor] = {}
       self._RXMode = False
       self.periodicSpeedScale = 1 # Only in every periodicSpeedScale-th period will the periodicEvent run. This must be a positive integer number.
       self.periodicEventCounter = 0
       self.battery = Battery()
       self.periodicEventEnergyConsumption = 0 # Every periodicEvent will drain the battery with periodicEventEnergyConsumption
+      self.initObject(x, y, *args, *kwargs)
             
    def move(self, x : int, y : int) -> None:
       self.x=x
@@ -47,7 +48,8 @@ class NodeSkeleton(object):
    def connectionsInvalidated(self) -> None:
       self.__needRecheckConnections = True # For example if the node's moved or changed its transmit power
    
-   def init(self) -> None: pass # This is the first function called by the environment. It's called only once
+   def initObject(self, x, y, *args, **kwargs) -> None: pass # This function is called by the constructor, it gets every arguments from it
+   def firstTick(self) -> None: pass # This is the first function called by the environment in the first tick. 
    
    def sensorEvent(self, value) -> None: pass # Sensor-like events. Can be periodic or event-driven dependent on the config
    

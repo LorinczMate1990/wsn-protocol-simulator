@@ -118,7 +118,7 @@ class Field:
       if self.firstTick:
          self.firstTick = False
          for node in self.nodeList:
-            node.init()
+            node.firstTick()
       self.__laterTicks()
    
    def __laterTicks(self):
