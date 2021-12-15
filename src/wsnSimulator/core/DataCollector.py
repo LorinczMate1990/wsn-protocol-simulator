@@ -25,22 +25,39 @@ class DataCollector(object):
         self.currentSession : int = 0
         self.oldSessions : list[dict[str, CollectedData]] = []
         self.sessionData : dict[str, CollectedData] = {}
+        self.triggerValues : dict[str, Any] = {}
 
     def startNextSession(self):
         self.currentSession += 1
         self.oldSessions.append(self.sessionData)
         self.sessionData = {}
 
+    def getSourceValue(self, path):
+        return eval("self.source.{}".format(path))
+
     def collectData(self, time : int):
-        for label, path in self.dataLabelsAndPaths.items():
+        for label, dataSource in self.dataLabelsAndPaths.items():
             try:
-                value = eval("self.source.{}".format(path))
+                logData = False
+                if type(dataSource) == type(dict()):
+                    if dataSource['type'] == "trigger":
+                        path = dataSource['path']
+                        trigger = dataSource['trigger']
+                        triggerValue = self.getSourceValue(trigger)
+                        if path not in self.triggerValues:
+                            self.triggerValues[path] = triggerValue
+                        logData = self.triggerValues[path] != triggerValue
+                        self.triggerValues[path] = triggerValue
+                elif type(dataSource) == type(""):
+                    path = dataSource
+                    logData = True
+                if logData:
+                    value = self.getSourceValue(path)
+                    if label not in self.sessionData:
+                        self.sessionData[label] = CollectedData()
+                    self.sessionData[label].addData(time, value)
             except AttributeError:
                 pass
-            else:
-                if label not in self.sessionData:
-                    self.sessionData[label] = CollectedData()
-                self.sessionData[label].addData(time, value)
 
 class NodeDataCollector(DataCollector):
     def __init__(self, node : NodeSkeleton, dataLabelsAndPaths : dict[str, str]):
