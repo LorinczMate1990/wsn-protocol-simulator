@@ -32,6 +32,8 @@ class CollectedData(object):
          hist[i] = hist.get(i, 0) + 1 
       return hist
 
+class NonexistingSourceKeyError(AttributeError): pass
+
 class DataCollector(object):
    def __init__(self, source : any, dataLabelsAndPaths : dict[str, str]):
       self.source = source
@@ -47,7 +49,10 @@ class DataCollector(object):
       self.sessionData = {}
 
    def getSourceValue(self, path):
-      return eval("self.source.{}".format(path))
+      try:
+         return eval("self.source.{}".format(path))
+      except AttributeError:
+         raise NonexistingSourceKeyError()
 
    def collectData(self, time : int):
       for label, dataSource in self.dataLabelsAndPaths.items():
@@ -62,6 +67,10 @@ class DataCollector(object):
                      self.triggerValues[path] = triggerValue
                   logData = self.triggerValues[path] != triggerValue
                   self.triggerValues[path] = triggerValue
+               elif dataSource['type'] == "conditional":
+                  path = dataSource['path']
+                  condition = dataSource['condition']
+                  logData = self.getSourceValue(condition)
             elif type(dataSource) == type(""):
                path = dataSource
                logData = True
@@ -70,7 +79,7 @@ class DataCollector(object):
                if label not in self.sessionData:
                   self.sessionData[label] = CollectedData()
                self.sessionData[label].addData(time, value)
-         except AttributeError:
+         except NonexistingSourceKeyError:
             pass
 
 class NodeDataCollector(DataCollector):
