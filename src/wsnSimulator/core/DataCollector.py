@@ -9,9 +9,14 @@ from wsnSimulator.core.Field import *
 class CollectedData(object):
     def __init__(self):
         self.data : dict[int, Any] = {}
+        self.lastTime = None
     
     def addData(self, time : int, value):
         self.data[time] = value
+        self.lastTime = time
+
+    def getLast(self):
+        return self.data[self.lastTime]
 
 class DataCollector(object):
     def __init__(self, source : any, dataLabelsAndPaths : dict[str, str]):
