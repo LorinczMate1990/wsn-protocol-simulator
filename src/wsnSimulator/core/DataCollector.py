@@ -28,10 +28,14 @@ class DataCollector(object):
 
     def collectData(self, time : int):
         for label, path in self.dataLabelsAndPaths.items():
-            value = eval("self.source.{}".format(path))
-            if label not in self.sessionData:
-                self.sessionData[label] = CollectedData()
-            self.sessionData[label].addData(time, value)
+            try:
+                value = eval("self.source.{}".format(path))
+            except AttributeError:
+                pass
+            else:
+                if label not in self.sessionData:
+                    self.sessionData[label] = CollectedData()
+                self.sessionData[label].addData(time, value)
 
 class NodeDataCollector(DataCollector):
     def __init__(self, node : NodeSkeleton, dataLabelsAndPaths : dict[str, str]):
