@@ -69,7 +69,7 @@ class DataCollector(object):
                   self.triggerValues[path] = triggerValue
                elif dataSource['type'] == "conditional":
                   path = dataSource['path']
-                  condition = dataSource['conditions']
+                  conditions = dataSource['conditions']
                   logData = True
                   for condition in conditions:
                      logData = logData and self.getSourceValue(condition)
