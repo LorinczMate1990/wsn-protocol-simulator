@@ -18,6 +18,12 @@ class CollectedData(object):
     def getLast(self):
         return self.data[self.lastTime]
 
+    def getHistogram(self):
+        hist = {} 
+        for i in self.data.values(): 
+            hist[i] = hist.get(i, 0) + 1 
+        return hist
+
 class DataCollector(object):
     def __init__(self, source : any, dataLabelsAndPaths : dict[str, str]):
         self.source = source
