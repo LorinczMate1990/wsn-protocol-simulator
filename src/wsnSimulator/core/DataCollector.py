@@ -14,14 +14,14 @@ class CollectedData(object):
    
    def addData(self, time : int, value):
       self.data[time] = value
-      self.lastTime, self.lastLastTime, lllTime = time, self.lastTime, self.lastLastTime
       
       if self.lastTime == None or self.lastLastTime == None:
-         return
-
-      if self.data[time] == self.data[self.lastTime] == self.data[self.lastLastTime]:
+         self.lastTime, self.lastLastTime = time, self.lastTime
+      elif self.data[time] == self.data[self.lastTime] == self.data[self.lastLastTime]:
          del self.data[self.lastTime]
-         self.lastTime, self.lastLastTime = self.lastLastTime, lllTime
+         self.lastTime = time
+      else:
+         self.lastTime, self.lastLastTime = time, self.lastTime
 
    def getLast(self):
       return self.data[self.lastTime]
