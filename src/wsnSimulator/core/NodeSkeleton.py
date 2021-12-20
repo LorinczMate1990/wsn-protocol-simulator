@@ -18,7 +18,7 @@ class NodeSkeleton(object):
       self.ID = NodeSkeleton.nodeCounter # The node's unique name. It's uniquness is vital for the simulation, that's why it's generated automaticly.
       NodeSkeleton.nodeCounter += 1
       self.__needRecheckConnections = True
-      self.reachables : list[NodeSkeleton] = [] # The neighbours. Sometimes, it's practical during the simulation to know the neighbours, that's why it's not marked with _ or __
+      self.reachables : list[ReachableDescriptor] = [] # The neighbours. Sometimes, it's practical during the simulation to know the neighbours, that's why it's not marked with _ or __
       self.asyncPropability = 1 # If this is 1, than this node's periodicEvent will call in every periodic event cycle. If this is 0, then never
       self.__channelUsage : dict[int, ChannelStateDescriptor] = {}
       self._RXMode = False

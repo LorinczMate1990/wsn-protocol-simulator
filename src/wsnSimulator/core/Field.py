@@ -59,7 +59,7 @@ class GraphMessageEvent(MessageEvent):
          rec = recDesc.to
          progressVector = vector.getWeightedMidpoint((rec.x, rec.y), (self.source.x,self.source.y), ratio)
          progressVector = vector.coordRound(progressVector)
-         pygame.draw.line(screen, (255,255,255), (self.source.x,self.source.y), (rec.x, rec.y), 2)
+         pygame.draw.line(screen, (0,0,0), (self.source.x,self.source.y), (rec.x, rec.y), 2)
          if self.success[rec.ID]:
             pygame.draw.circle(screen, (255,255,0), progressVector, 4)
 
@@ -136,12 +136,14 @@ class Field:
       self.localTime += 1
          
 class GraphFieldHandler(Field):
-   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton]], width : int, height : int):
+   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton]], width : int, height : int, **vargs):
       Field.__init__(self, connectionCheckFunction)
       pygame.init()
       self.done = False
       self.paused = False
       self.screen : pygame.Surface = pygame.display.set_mode((width, height))
+      self.background = vargs.get("background", (255, 255, 255))
+      self.displayConnections = vargs.get("displayConnections", False)
    
    def __eventHandler(self, events):
       for event in events:
@@ -157,7 +159,15 @@ class GraphFieldHandler(Field):
    def __displayEvents(self):
       for event in self.eventList:
          event._draw(self.screen)
-         
+
+   def __displayConnections(self):
+      for node in self.nodeList:
+         for reachableDescriptor in node.reachables:
+            neighbour = reachableDescriptor.to
+            propability = reachableDescriptor.propability
+            color = (int(255 * (1-propability)), 0, int(255*propability))
+            pygame.draw.line(self.screen, color, (node.x, node.y), (neighbour.x, neighbour.y), 1)
+
    def __decraseMessageEventTtlBy(self, by : float):
       # ...decrease the message event's TTL
       for msgEvent in self.eventList:
@@ -194,8 +204,10 @@ class GraphFieldHandler(Field):
                self.tick()
             self.__decraseMessageEventTtlBy(1./frameIterationRatio)
             
-         self.screen.fill((0, 0, 0))
+         self.screen.fill(self.background)
          self.__eventHandler(pygame.event.get())
+         if self.displayConnections:
+            self.__displayConnections()
          self.__displayEvents()
          self.__displayNodes()
          pygame.display.flip()
