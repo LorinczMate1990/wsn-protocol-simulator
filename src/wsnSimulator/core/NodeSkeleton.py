@@ -71,7 +71,7 @@ class NodeSkeleton(object):
       if channel in self.__channelUsage:
          self.__channelUsage[channel].newMessage()
       else:
-         self.__channelUsage[channel] = ChannelStateDescriptor()
+         self.__channelUsage[channel] = self.field.getChannelStateDescriptor(channel)
       
    def _endChannelUse(self, channel : int) -> None: # If the sending of a message is finished, it will call this function
       descriptor=self.__channelUsage[channel]
@@ -79,6 +79,7 @@ class NodeSkeleton(object):
       if descriptor.destroyable():
          del self.__channelUsage[channel]
       return not descriptor.jammed()
+
    def sendMessage(self, data, duration, channel=1):
       if self._RXMode: return False
       self.field.sendMessage(self.reachables, data, duration, channel, self)

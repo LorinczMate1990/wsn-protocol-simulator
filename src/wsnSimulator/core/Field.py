@@ -64,12 +64,17 @@ class GraphMessageEvent(MessageEvent):
             pygame.draw.circle(screen, (255,255,0), progressVector, 4)
 
 class Field:
-   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton], float]):
+   def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton], float], channelOptions : dict[int, dict[str, any]] = {}):
       self.connectionCheckFunction = connectionCheckFunction 
       self.nodeList : list[NodeSkeleton] = []
       self.eventList : list[MessageEvent] = []
       self.localTime : int = 0
       self.firstTick = True
+      self.channelOptions = channelOptions
+
+   def getChannelStateDescriptor(self, channelId : int) -> ChannelStateDescriptor:
+      options = self.channelOptions.get(channelId, {})
+      return ChannelStateDescriptor(**options)
 
    def reset(self) -> None:
       self.eventList : list[MessageEvent] = []
@@ -137,7 +142,8 @@ class Field:
          
 class GraphFieldHandler(Field):
    def __init__(self, connectionCheckFunction : Callable[[NodeSkeleton, NodeSkeleton]], width : int, height : int, **vargs):
-      Field.__init__(self, connectionCheckFunction)
+      channelOptions = vargs.get("channelOptions", {})   
+      Field.__init__(self, connectionCheckFunction, channelOptions)
       pygame.init()
       self.done = False
       self.paused = False

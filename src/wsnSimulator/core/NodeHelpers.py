@@ -7,13 +7,14 @@ if TYPE_CHECKING:
 from random import random  
 
 class ChannelStateDescriptor(object):
-   def __init__(self):
+   def __init__(self, jammable=True):
       self.counter = 1
       self.__jammed = False
+      self.__jammable = jammable
       
    def newMessage(self):
       self.counter +=1
-      self.__jammed = True
+      self.__jammed = self.__jammable
       
    def endMessage(self):
       self.counter -= 1
